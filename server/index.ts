@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { config } from './config/db';
-
+import auth from "./routes/auth"
 dotenv.config();
 
 const app: Express = express();
@@ -11,7 +11,7 @@ const port = process.env.PORT || 4000;
 mongoose
     .connect(config.mongo.url)
     .then(() => {
-        console.log("connect")
+        console.log("connected to mongo db")
         StartServer();
     })
     .catch((error) => console.error(error));
@@ -47,6 +47,7 @@ const StartServer = () => {
     });
 
     /** Healthcheck */
+    app.use('/auth', auth)
     app.get('/', (req, res, next) => res.status(200).send('Api is live'))
     app.get('/ping', (req, res, next) => res.status(200).json({ message: 'live' }));
 
