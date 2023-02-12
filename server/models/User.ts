@@ -6,7 +6,14 @@ export interface UserData {
     password: string
 }
 const UserSchema: Schema = new Schema({
-    username: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    email: {
+        type: String,
+        required: true,
+        minlength: 4,
+        maxlength: 150,
+        unique: true
+    },
     password: { type: String, required: true },
 },
     {
