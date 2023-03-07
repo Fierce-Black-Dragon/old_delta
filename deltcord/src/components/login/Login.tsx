@@ -5,7 +5,7 @@ const Login = () => {
     return (
         <div className=' flex flex-col justify-center items-center'>
 
-            <h3>{newuser ? "Register" : "Login"}</h3>
+            {/* <h3>{newuser ? "Register" : "Login"}</h3> */}
             <div className="flex flex-col w-full border-opacity-50">
                 <div className="grid h-100 card  rounded-box place-items-center">
 
