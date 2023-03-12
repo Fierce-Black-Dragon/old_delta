@@ -1,19 +1,25 @@
-import Login from "./components/login/Login";
-import Navbar from "./components/navbar/Navbar";
+import { Route, Routes } from "react-router-dom";
+
+import RequreAuth from "./components/login/RequreAuth";
+import AuthScreen from "./pages/AuthScreen";
+import DashboardScreen from "./pages/DashboardScreen";
 
 function App() {
   return (
     <div className="App h-screen bg-slate-800">
-      <div className="bg-red">
-        {/* <Navbar  /> */}
-        <div className="navbar flex flex-col justify-center items-center">
-          <div className="flex-1">
-            <a className="btn btn-ghost normal-case text-xl">Detacord</a>
-          </div>
-        </div>
-
-        <Login />
-      </div>
+     
+    <Routes>
+      <Route path='/'  element={<>home</>}></Route>
+      <Route path="/auth" element={<AuthScreen/>}></Route>
+      <Route
+          path='/chats'
+          element={
+          <RequreAuth>
+            <DashboardScreen/>
+          </RequreAuth>
+          }
+        />
+    </Routes>
     </div>
   );
 }

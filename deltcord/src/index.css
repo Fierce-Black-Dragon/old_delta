@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.ml-18 {
+    margin-left: 4.2rem;
+}
+
+.h-screen-90 {
+    height: 86vh;
+}
