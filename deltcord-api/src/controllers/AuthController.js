@@ -26,11 +26,8 @@ const handleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             success: false,
             message: " All feilds  are required",
         });
-    const usergiveType = username && email ? "email" : email ? "email" : "username";
-    const filteredBody = (0, filterReqData_1.default)(req.body, "password", usergiveType);
-    let foundUser = yield User_1.default.findOne({
-        [usergiveType]: filteredBody[usergiveType],
-    })
+    const filteredBody = (0, filterReqData_1.default)(req.body, "password", "username", "email");
+    let foundUser = yield User_1.default.findOne({ $or: [{ email: filteredBody === null || filteredBody === void 0 ? void 0 : filteredBody.username }, { username: filteredBody === null || filteredBody === void 0 ? void 0 : filteredBody.email }] })
         .select("+password")
         .exec();
     // if (email)
