@@ -2,20 +2,35 @@ import mongoose, { Schema, Document, InferSchemaType } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt, { Secret } from "jsonwebtoken";
 const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        maxlength: [40, " max 40 character"],
-    },
     username: {
         type: String,
         required: true,
         maxlength: [30, " max 40 character"],
     },
+    firstName: {
+        type: String,
+        required: [true, "First Name is required"],
+    },
+    lastName: {
+        type: String,
+        required: [true, "Last Name is required"],
+    },
+    avatar: {
+        type: String,
+    },
     email: {
         type: String,
-        required: [true, "Please enter the email address"],
-        unique: true,
+        required: [true, "Email is required"],
+        validate: {
+            validator: function (email: any) {
+                return String(email)
+                    .toLowerCase()
+                    .match(
+                        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    );
+            },
+            message: (props: any) => `Email (${props.value}) is invalid!`,
+        },
     },
     password: {
         type: String,
@@ -23,6 +38,12 @@ const userSchema = new Schema({
         minlength: [6, "Please enter password greater than or equal to 6 char"],
         select: false,
     },
+    friends: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+    ],
 
     status: {
         type: String,
@@ -47,7 +68,9 @@ userSchema.pre("save", async function (next) {
 // Mongoose Methods
 //user password validate method
 userSchema.methods.verifyPassword = async function (senderPassword: string) {
+    console.log(senderPassword, "senderPassword", this.password);
     const isValid = await bcrypt.compare(senderPassword, this.password);
+
     return isValid;
 };
 

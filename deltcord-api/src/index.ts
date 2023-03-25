@@ -1,3 +1,4 @@
+
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -6,14 +7,14 @@ import morgan from 'morgan';
 import xss from 'xss-clean';
 import rateLimit from "express-rate-limit"; // Basic rate-limiting middleware for Express. Use to limit repeated requests to public APIs and/or endpoints such as password reset.
 import helmet from "helmet"; // Helmet helps you secure your Express apps by setting various HTTP headers. It's not a silver bullet, but it can help!
-
+import mongoose from "mongoose"
 import mongosanitize from "express-mongo-sanitize"; // This module searches for any keys in objects that begin with a $ sign or contain a ., from req.body, req.query or req.params.
-
+import router from "./routes/index"
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import auth from "./routes/auth"
+
 dotenv.config();
-require("./config/db.js").connect();
+require("./config/db.ts").connect(mongoose);
 const app: Express = express();
 const port = process.env.PORT || 4000;
 app.use(
@@ -63,8 +64,19 @@ app.use(
 
 app.use(mongosanitize());
 
+app.use("/tawk", limiter);
+
+app.use(
+    express.urlencoded({
+        extended: true,
+    })
+); // Returns middleware that only parses urlencoded bodies
+
+app.use(mongosanitize());
+
 app.use(xss());
-app.use('/auth', auth)
+
+app.use('/api', router);
 app.get('/', (req: Request, res: Response) => {
     res.send('server is live');
 });

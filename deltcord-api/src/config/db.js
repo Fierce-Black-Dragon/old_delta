@@ -8,15 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
+// 
 const MONGODB_URL = process.env.MONGO_URL;
-exports.connect = () => __awaiter(void 0, void 0, void 0, function* () {
+exports.connect = (mongoose) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield mongoose_1.default.connect(MONGODB_URL);
+        yield mongoose.connect(MONGODB_URL);
         console.log(`🏪[Database]: DB CONNECTED SUCCESSFULLY`);
     }
     catch (error) {

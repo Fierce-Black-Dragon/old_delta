@@ -11,12 +11,13 @@ const morgan_1 = __importDefault(require("morgan"));
 const xss_clean_1 = __importDefault(require("xss-clean"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit")); // Basic rate-limiting middleware for Express. Use to limit repeated requests to public APIs and/or endpoints such as password reset.
 const helmet_1 = __importDefault(require("helmet")); // Helmet helps you secure your Express apps by setting various HTTP headers. It's not a silver bullet, but it can help!
+const mongoose_1 = __importDefault(require("mongoose"));
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize")); // This module searches for any keys in objects that begin with a $ sign or contain a ., from req.body, req.query or req.params.
+const index_1 = __importDefault(require("./routes/index"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const auth_1 = __importDefault(require("./routes/auth"));
 dotenv_1.default.config();
-require("./config/db.js").connect();
+require("./config/db.ts").connect(mongoose_1.default);
 const app = (0, express_1.default)();
 const port = process.env.PORT || 4000;
 app.use((0, cors_1.default)({
@@ -48,8 +49,13 @@ app.use(express_1.default.urlencoded({
     extended: true,
 })); // Returns middleware that only parses urlencoded bodies
 app.use((0, express_mongo_sanitize_1.default)());
+app.use("/tawk", limiter);
+app.use(express_1.default.urlencoded({
+    extended: true,
+})); // Returns middleware that only parses urlencoded bodies
+app.use((0, express_mongo_sanitize_1.default)());
 app.use((0, xss_clean_1.default)());
-app.use('/auth', auth_1.default);
+app.use('/api', index_1.default);
 app.get('/', (req, res) => {
     res.send('server is live');
 });

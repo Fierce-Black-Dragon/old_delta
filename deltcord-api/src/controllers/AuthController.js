@@ -16,43 +16,69 @@ exports.handleRefreshToken = exports.handleSignup = exports.handleLogin = void 0
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
 const cookieGenerator_1 = __importDefault(require("../utils/cookieGenerator"));
+const filterReqData_1 = __importDefault(require("../utils/filterReqData"));
 const handleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { user, pwd } = req.body;
-    if (!user || !pwd)
-        return res
-            .status(400)
-            .json({ message: "Username and password are required." });
-    const foundUser = yield User_1.default.findOne({ username: user }).exec();
+    const { email, username, password } = req.body;
+    console.log("first", (!email || !username));
+    if ((!email && !username) || !password)
+        return res.status(400).
+            json({
+            success: false,
+            message: " All feilds  are required"
+        });
+    const usergiveType = username && email ? "email" : email ? "email" : "username";
+    const filteredBody = (0, filterReqData_1.default)(req.body, "password", usergiveType);
+    let foundUser = yield User_1.default.findOne({ [usergiveType]: filteredBody[usergiveType] }).select('+password').exec();
+    // if (email)
+    // =usergiveType
     if (!foundUser)
         return res.sendStatus(401); //Unauthorized
     // evaluate password
-    const isPasswordCorrect = yield (user === null || user === void 0 ? void 0 : user.verifyPassword(foundUser === null || foundUser === void 0 ? void 0 : foundUser.password));
+    const isPasswordCorrect = yield (foundUser === null || foundUser === void 0 ? void 0 : foundUser.verifyPassword(filteredBody === null || filteredBody === void 0 ? void 0 : filteredBody.password));
     if (isPasswordCorrect) {
-        (0, cookieGenerator_1.default)(user, res);
+        (0, cookieGenerator_1.default)(foundUser, res, "Login Successful");
     }
     else {
-        res.sendStatus(401);
+        res.status(401).
+            json({
+            success: false,
+            message: " Unauthorise request"
+        });
     }
 });
 exports.handleLogin = handleLogin;
 const handleSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email, password, name } = req.body;
-        if (!email || !password || !name) {
-            res.status(400).send(" every feild  is needed");
+        const { email, password, lastName, firstName, username } = req.body;
+        if (!email || !password || !lastName || !firstName) {
+            res.status(400).
+                json({
+                success: false,
+                message: " All feilds  are required"
+            });
         } //finding if user is already register
+        const filteredBody = (0, filterReqData_1.default)(req.body, "firstName", "lastName", "email", "password", "username");
+        if (!filteredBody["username"]) {
+            filteredBody["username"] = filteredBody.email;
+        }
         const existingUser = yield User_1.default.findOne({ email: email });
         if (existingUser) {
-            res.status(403).send(`${existingUser.email} is already been registered`);
+            res.status(403).json({
+                success: false,
+                message: `${existingUser.email} is already been registered`
+            });
         }
         //creating user in mongo db
-        const user = new User_1.default({ name, email, password });
+        const user = new User_1.default(filteredBody);
         yield user.save();
         //token creation function
-        (0, cookieGenerator_1.default)(user, res);
+        (0, cookieGenerator_1.default)(user, res, "Register Succesfully");
     }
     catch (error) {
-        res.json(error);
+        res.status(500).json({
+            success: false,
+            message: error
+        });
     }
 });
 exports.handleSignup = handleSignup;
@@ -85,7 +111,7 @@ const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, funct
             console.log('expired refresh token');
         }
         const user = yield User_1.default.findOne({ id: decode.id }).exec();
-        (0, cookieGenerator_1.default)(user, res);
+        (0, cookieGenerator_1.default)(user, res, "Re-login  Success");
     }));
 });
 exports.handleRefreshToken = handleRefreshToken;

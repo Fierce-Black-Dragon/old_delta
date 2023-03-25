@@ -3,43 +3,83 @@ import { Request, Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import User from "../models/User";
 import cookieGenerator from "../utils/cookieGenerator";
+import filterObj from "../utils/filterReqData";
 
 const handleLogin = async (req: Request, res: Response) => {
-    const { user, pwd } = req.body;
-    if (!user || !pwd)
-        return res
-            .status(400)
-            .json({ message: "Username and password are required." });
+    const { email, username, password } = req.body;
+    console.log("first", (!email || !username))
+    if ((!email && !username) || !password)
+        return res.status(400).
+            json({
+                success: false,
+                message: " All feilds  are required"
+            });
 
-    const foundUser = await User.findOne({ username: user }).exec();
+    const usergiveType = username && email ? "email" : email ? "email" : "username";
+    const filteredBody = filterObj(
+        req.body,
+        "password",
+        usergiveType
+    );
+
+    let foundUser = await User.findOne({ [usergiveType]: filteredBody[usergiveType] }).select('+password').exec();
+
+    // if (email)
+    // =usergiveType
     if (!foundUser) return res.sendStatus(401); //Unauthorized
     // evaluate password
-    const isPasswordCorrect = await user?.verifyPassword(foundUser?.password);
+    const isPasswordCorrect = await foundUser?.verifyPassword(filteredBody?.password);
     if (isPasswordCorrect) {
-        cookieGenerator(user, res);
+        cookieGenerator(foundUser, res, "Login Successful");
     } else {
-        res.sendStatus(401);
+        res.status(401).
+            json({
+                success: false,
+                message: " Unauthorise request"
+            });
     }
 };
 
 const handleSignup = async (req: Request, res: Response) => {
     try {
-        const { email, password, name } = req.body;
+        const { email, password, lastName, firstName, username } = req.body;
 
-        if (!email || !password || !name) {
-            res.status(400).send(" every feild  is needed");
+        if (!email || !password || !lastName || !firstName) {
+            res.status(400).
+                json({
+                    success: false,
+                    message: " All feilds  are required"
+                });
         } //finding if user is already register
+
+        const filteredBody = filterObj(
+            req.body,
+            "firstName",
+            "lastName",
+            "email",
+            "password",
+            "username"
+        );
+        if (!filteredBody["username"]) {
+            filteredBody["username"] = filteredBody.email
+        }
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
-            res.status(403).send(`${existingUser.email} is already been registered`);
+            res.status(403).json({
+                success: false,
+                message: `${existingUser.email} is already been registered`
+            });
         }
         //creating user in mongo db
-        const user = new User({ name, email, password });
+        const user = new User(filteredBody);
         await user.save();
         //token creation function
-        cookieGenerator(user, res);
+        cookieGenerator(user, res, "Register Succesfully");
     } catch (error) {
-        res.json(error);
+        res.status(500).json({
+            success: false,
+            message: error
+        });
     }
 };
 
@@ -79,7 +119,7 @@ const handleRefreshToken = async (req: Request, res: Response) => {
             }
             const user = await User.findOne({ id: decode.id }).exec();
 
-            cookieGenerator(user, res);
+            cookieGenerator(user, res, "Re-login  Success");
         }
     );
 }

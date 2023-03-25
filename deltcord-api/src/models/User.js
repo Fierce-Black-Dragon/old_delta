@@ -39,20 +39,33 @@ const mongoose_1 = __importStar(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userSchema = new mongoose_1.Schema({
-    name: {
-        type: String,
-        required: true,
-        maxlength: [40, " max 40 character"],
-    },
     username: {
         type: String,
         required: true,
         maxlength: [30, " max 40 character"],
     },
+    firstName: {
+        type: String,
+        required: [true, "First Name is required"],
+    },
+    lastName: {
+        type: String,
+        required: [true, "Last Name is required"],
+    },
+    avatar: {
+        type: String,
+    },
     email: {
         type: String,
-        required: [true, "Please enter the email address"],
-        unique: true,
+        required: [true, "Email is required"],
+        validate: {
+            validator: function (email) {
+                return String(email)
+                    .toLowerCase()
+                    .match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+            },
+            message: (props) => `Email (${props.value}) is invalid!`,
+        },
     },
     password: {
         type: String,
@@ -60,6 +73,12 @@ const userSchema = new mongoose_1.Schema({
         minlength: [6, "Please enter password greater than or equal to 6 char"],
         select: false,
     },
+    friends: [
+        {
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: "User",
+        },
+    ],
     status: {
         type: String,
         default: "offline"
@@ -85,6 +104,7 @@ userSchema.pre("save", function (next) {
 //user password validate method
 userSchema.methods.verifyPassword = function (senderPassword) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(senderPassword, "senderPassword", this.password);
         const isValid = yield bcrypt_1.default.compare(senderPassword, this.password);
         return isValid;
     });

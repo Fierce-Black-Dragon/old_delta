@@ -1,7 +1,7 @@
 
 
 
-const cookieGenerator = async (user: any, res: any) => {
+const cookieGenerator = async (user: any, res: any, message: string) => {
     //jwt  accessToken creation
     const accessToken = await user.jwtAccessTokenCreation();
 
@@ -20,6 +20,7 @@ const cookieGenerator = async (user: any, res: any) => {
     res.status(200).json({
         success: true,
         access_token: accessToken,
+        message: message,
         name: user.name,
 
     });

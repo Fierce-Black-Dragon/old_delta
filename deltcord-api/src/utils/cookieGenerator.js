@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const cookieGenerator = (user, res) => __awaiter(void 0, void 0, void 0, function* () {
+const cookieGenerator = (user, res, message) => __awaiter(void 0, void 0, void 0, function* () {
     //jwt  accessToken creation
     const accessToken = yield user.jwtAccessTokenCreation();
     const options = {
@@ -25,6 +25,7 @@ const cookieGenerator = (user, res) => __awaiter(void 0, void 0, void 0, functio
     res.status(200).json({
         success: true,
         access_token: accessToken,
+        message: message,
         name: user.name,
     });
 });
