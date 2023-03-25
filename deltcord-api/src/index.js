@@ -55,6 +55,7 @@ app.use(express_1.default.urlencoded({
 })); // Returns middleware that only parses urlencoded bodies
 app.use((0, express_mongo_sanitize_1.default)());
 app.use((0, xss_clean_1.default)());
+app.use((0, morgan_1.default)("dev"));
 app.use('/api', index_1.default);
 app.get('/', (req, res) => {
     res.send('server is live');

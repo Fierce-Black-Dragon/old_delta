@@ -12,23 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleRefreshToken = exports.handleSignup = exports.handleLogin = void 0;
+exports.handleLogout = exports.handleRefreshToken = exports.handleSignup = exports.handleLogin = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
 const cookieGenerator_1 = __importDefault(require("../utils/cookieGenerator"));
 const filterReqData_1 = __importDefault(require("../utils/filterReqData"));
 const handleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, username, password } = req.body;
-    console.log("first", (!email || !username));
+    console.log("first", !email || !username);
     if ((!email && !username) || !password)
-        return res.status(400).
-            json({
+        return res.status(400).json({
             success: false,
-            message: " All feilds  are required"
+            message: " All feilds  are required",
         });
     const usergiveType = username && email ? "email" : email ? "email" : "username";
     const filteredBody = (0, filterReqData_1.default)(req.body, "password", usergiveType);
-    let foundUser = yield User_1.default.findOne({ [usergiveType]: filteredBody[usergiveType] }).select('+password').exec();
+    let foundUser = yield User_1.default.findOne({
+        [usergiveType]: filteredBody[usergiveType],
+    })
+        .select("+password")
+        .exec();
     // if (email)
     // =usergiveType
     if (!foundUser)
@@ -39,10 +43,9 @@ const handleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         (0, cookieGenerator_1.default)(foundUser, res, "Login Successful");
     }
     else {
-        res.status(401).
-            json({
+        res.status(401).json({
             success: false,
-            message: " Unauthorise request"
+            message: " Unauthorise request",
         });
     }
 });
@@ -51,10 +54,9 @@ const handleSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const { email, password, lastName, firstName, username } = req.body;
         if (!email || !password || !lastName || !firstName) {
-            res.status(400).
-                json({
+            res.status(400).json({
                 success: false,
-                message: " All feilds  are required"
+                message: " All feilds  are required",
             });
         } //finding if user is already register
         const filteredBody = (0, filterReqData_1.default)(req.body, "firstName", "lastName", "email", "password", "username");
@@ -65,7 +67,7 @@ const handleSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (existingUser) {
             res.status(403).json({
                 success: false,
-                message: `${existingUser.email} is already been registered`
+                message: `${existingUser.email} is already been registered`,
             });
         }
         //creating user in mongo db
@@ -77,17 +79,17 @@ const handleSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         res.status(500).json({
             success: false,
-            message: error
+            message: error,
         });
     }
 });
 exports.handleSignup = handleSignup;
 const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookies = req.cookies;
-    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
+    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.token))
         return res.sendStatus(401);
-    const refreshToken = cookies.jwt;
-    res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true });
+    const refreshToken = cookies.token;
+    res.clearCookie("token", { httpOnly: true, sameSite: "none", secure: true });
     // const foundUser = await User.findOne({ refreshToken }).exec();
     // // Detected refresh token reuse!
     // if (!foundUser) {
@@ -105,13 +107,26 @@ const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, funct
     //     )
     //     return res.sendStatus(403); //Forbidden
     // }
-    // evaluate jwt:obj 
+    // evaluate jwt:obj
     jsonwebtoken_1.default.verify(refreshToken, process.env.REFRESH_KEY, (err, decode) => __awaiter(void 0, void 0, void 0, function* () {
         if (err) {
-            console.log('expired refresh token');
+            console.log("expired refresh token");
         }
-        const user = yield User_1.default.findOne({ id: decode.id }).exec();
+        const id = new mongoose_1.default.Types.ObjectId(decode.id);
+        const user = yield User_1.default.findById(id);
         (0, cookieGenerator_1.default)(user, res, "Re-login  Success");
     }));
 });
 exports.handleRefreshToken = handleRefreshToken;
+const handleLogout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const cookies = req.cookies;
+    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.token))
+        return res.sendStatus(401);
+    const refreshToken = cookies.token;
+    res.clearCookie("token", { httpOnly: true, sameSite: "none", secure: true });
+    res.status(200).json({
+        success: true,
+        message: ` Logout succesfully`,
+    });
+});
+exports.handleLogout = handleLogout;

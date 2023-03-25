@@ -75,7 +75,7 @@ app.use(
 app.use(mongosanitize());
 
 app.use(xss());
-
+app.use(morgan("dev"))
 app.use('/api', router);
 app.get('/', (req: Request, res: Response) => {
     res.send('server is live');
