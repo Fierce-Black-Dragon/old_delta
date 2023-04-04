@@ -44,19 +44,18 @@ const limiter = (0, express_rate_limit_1.default)({
     windowMs: 60 * 60 * 1000,
     message: "Too many Requests from this IP, please try again in an hour!",
 });
-app.use("/tawk", limiter);
+app.use("/slate", limiter);
 app.use(express_1.default.urlencoded({
     extended: true,
 })); // Returns middleware that only parses urlencoded bodies
 app.use((0, express_mongo_sanitize_1.default)());
-app.use("/tawk", limiter);
 app.use(express_1.default.urlencoded({
     extended: true,
 })); // Returns middleware that only parses urlencoded bodies
 app.use((0, express_mongo_sanitize_1.default)());
 app.use((0, xss_clean_1.default)());
 app.use((0, morgan_1.default)("dev"));
-app.use('/api', index_1.default);
+app.use('/slate/api', index_1.default);
 app.get('/', (req, res) => {
     res.send('server is live');
 });

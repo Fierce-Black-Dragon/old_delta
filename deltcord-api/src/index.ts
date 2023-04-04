@@ -54,8 +54,8 @@ const limiter = rateLimit({
     message: "Too many Requests from this IP, please try again in an hour!",
 });
 
-app.use("/tawk", limiter);
 
+app.use("/slate", limiter);
 app.use(
     express.urlencoded({
         extended: true,
@@ -64,7 +64,6 @@ app.use(
 
 app.use(mongosanitize());
 
-app.use("/tawk", limiter);
 
 app.use(
     express.urlencoded({
@@ -76,7 +75,7 @@ app.use(mongosanitize());
 
 app.use(xss());
 app.use(morgan("dev"))
-app.use('/api', router);
+app.use('/slate/api', router);
 app.get('/', (req: Request, res: Response) => {
     res.send('server is live');
 });

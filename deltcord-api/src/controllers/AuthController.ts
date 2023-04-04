@@ -83,7 +83,13 @@ const handleSignup = async (req: Request, res: Response) => {
 
 const handleRefreshToken = async (req: Request, res: Response) => {
     const cookies = req.cookies;
-    if (!cookies?.token) return res.sendStatus(401);
+    if (!cookies?.token) {
+       res.status(401).json({
+            success: true,
+            message: "Unauthorise user",
+            });
+            
+    } 
     const refreshToken = cookies.token;
     res.clearCookie("token", { httpOnly: true, sameSite: "none", secure: true });
 

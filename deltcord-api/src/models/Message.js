@@ -24,29 +24,25 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const messageSchema = new mongoose_1.Schema({
-    sender: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
-    },
-    ChatRef: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: 'Chat'
-    },
-    content: {
+const personalMessageSchema = new mongoose_1.Schema({
+    sender: { type: mongoose_1.default.Types.ObjectId, ref: "User", required: true },
+    type: {
         type: String,
+        enum: ["Text", "Media", "Document", "Link"],
     },
-    message_type: {
-        type: String,
-        default: 'string'
-        // video ,img audio
-    },
-    createdAt: {
+    created_at: {
         type: Date,
-        default: Date.now,
+        default: Date.now(),
     },
-    // more fields will be added when required
-});
-const Message = mongoose_1.default.model("Message", messageSchema);
-exports.default = Message;
+    text: {
+        type: String,
+    },
+    file: {
+        type: String,
+    },
+    chatId: { type: mongoose_1.default.Types.ObjectId, ref: "Chat", required: true },
+}, { timestamps: true }
+// more fields will be added when required
+);
+const PesonalMessage = mongoose_1.default.model("PesonalMessage", personalMessageSchema);
+exports.default = PesonalMessage;

@@ -83,8 +83,12 @@ const handleSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.handleSignup = handleSignup;
 const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookies = req.cookies;
-    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.token))
-        return res.sendStatus(401);
+    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.token)) {
+        res.status(401).json({
+            success: true,
+            message: "Unauthorise user",
+        });
+    }
     const refreshToken = cookies.token;
     res.clearCookie("token", { httpOnly: true, sameSite: "none", secure: true });
     // const foundUser = await User.findOne({ refreshToken }).exec();

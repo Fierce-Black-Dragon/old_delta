@@ -27,18 +27,11 @@ const mongoose_1 = __importStar(require("mongoose"));
 const chatSchema = new mongoose_1.Schema({
     members: [{
             type: mongoose_1.default.Schema.Types.ObjectId,
-            required: true,
-            ref: 'User'
+            ref: 'User',
+            required: true
         }],
-    last_msg: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: 'Message'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    // more fields will be added when required
+}, {
+    timestamps: true
 });
 const Chat = mongoose_1.default.model("Chat", chatSchema);
 exports.default = Chat;

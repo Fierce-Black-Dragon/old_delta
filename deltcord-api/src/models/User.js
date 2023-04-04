@@ -79,15 +79,19 @@ const userSchema = new mongoose_1.Schema({
             ref: "User",
         },
     ],
+    guilds: [
+        {
+            type: mongoose_1.default.Types.ObjectId,
+            ref: "Guild",
+        },
+    ],
     status: {
         type: String,
-        default: "offline"
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
+        default: "offline",
     },
     // more fields will be added when required
+}, {
+    timestamps: true,
 });
 //encrypt password before save -- mongoose Hook
 userSchema.pre("save", function (next) {
