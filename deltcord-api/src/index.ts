@@ -17,17 +17,14 @@ dotenv.config();
 require("./config/db.ts").connect(mongoose);
 const app: Express = express();
 const port = process.env.PORT || 4000;
-app.use(
-    cors({
-        origin: "*",
 
-        methods: ["GET", "PATCH", "POST", "DELETE", "PUT"],
-
-        credentials: true, //
-
-        //   Access-Control-Allow-Credentials is a header that, when set to true , tells browsers to expose the response to the frontend JavaScript code. The credentials consist of cookies, authorization headers, and TLS client certificates.
-    })
-);
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "PATCH", "POST", "DELETE", "PUT"],
+    credentials: true
+  }));
+  
+app.options("*", cors());
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));

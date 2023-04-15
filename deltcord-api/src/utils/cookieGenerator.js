@@ -24,9 +24,12 @@ const cookieGenerator = (user, res, message) => __awaiter(void 0, void 0, void 0
     res.cookie("token", refreshToken, options);
     res.status(200).json({
         success: true,
-        access_token: accessToken,
-        message: message,
-        name: user.name,
+        data: {
+            access_token: accessToken,
+            email: user.email, isloggedin: true,
+            name: user.name,
+            message: message,
+        },
     });
 });
 exports.default = cookieGenerator;

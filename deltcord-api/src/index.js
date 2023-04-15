@@ -21,11 +21,11 @@ require("./config/db.ts").connect(mongoose_1.default);
 const app = (0, express_1.default)();
 const port = process.env.PORT || 4000;
 app.use((0, cors_1.default)({
-    origin: "*",
+    origin: "http://localhost:5173",
     methods: ["GET", "PATCH", "POST", "DELETE", "PUT"],
-    credentials: true, //
-    //   Access-Control-Allow-Credentials is a header that, when set to true , tells browsers to expose the response to the frontend JavaScript code. The credentials consist of cookies, authorization headers, and TLS client certificates.
+    credentials: true
 }));
+app.options("*", (0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(body_parser_1.default.json());

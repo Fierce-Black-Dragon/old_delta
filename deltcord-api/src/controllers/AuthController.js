@@ -70,6 +70,7 @@ const handleSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         //creating user in mongo db
         const user = new User_1.default(filteredBody);
         yield user.save();
+        console.log(user, "===========2");
         //token creation function
         (0, cookieGenerator_1.default)(user, res, "Register Succesfully");
     }
@@ -85,7 +86,7 @@ const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const cookies = req.cookies;
     if (!(cookies === null || cookies === void 0 ? void 0 : cookies.token)) {
         res.status(401).json({
-            success: true,
+            success: false,
             message: "Unauthorise user",
         });
     }

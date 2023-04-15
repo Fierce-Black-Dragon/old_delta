@@ -71,6 +71,7 @@ const handleSignup = async (req: Request, res: Response) => {
         //creating user in mongo db
         const user = new User(filteredBody);
         await user.save();
+        console.log(user,"===========2")
         //token creation function
         cookieGenerator(user, res, "Register Succesfully");
     } catch (error) {
@@ -85,7 +86,7 @@ const handleRefreshToken = async (req: Request, res: Response) => {
     const cookies = req.cookies;
     if (!cookies?.token) {
        res.status(401).json({
-            success: true,
+            success: false,
             message: "Unauthorise user",
             });
             
