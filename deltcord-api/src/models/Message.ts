@@ -11,12 +11,8 @@ const personalMessageSchema = new Schema(
       type: Date,
       default: Date.now(),
     },
-    text: {
-      type: String,
-    },
-    file: {
-      type: String,
-    },
+    content: { type: String, trim: true },
+    readBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     chatId: { type: mongoose.Types.ObjectId, ref: "Chat", required: true },
   },

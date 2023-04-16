@@ -14,20 +14,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
-const verifyJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization || req.headers.Authorization;
-    if (!(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith('Bearer ')))
+const verifyJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const authHeader = req.headers.authorization;
+    if (!(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith("Bearer "))) {
         return res.sendStatus(401);
-    const token = authHeader.split(' ')[1];
-    console.log(token);
-    jsonwebtoken_1.default.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => __awaiter(void 0, void 0, void 0, function* () {
-        if (err)
-            return res.sendStatus(403); //invalid token
-        const foundUser = yield User_1.default.findOne({ id: decoded.id }).exec();
-        if (!foundUser)
+    }
+    const token = authHeader.split(" ")[1];
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_KEY);
+        const foundUser = yield User_1.default.findById(decoded.id).exec();
+        if (!foundUser) {
             return res.sendStatus(404);
+        }
         req.user = foundUser;
         next();
-    }));
-};
+    }
+    catch (err) {
+        console.log(err);
+        return res.sendStatus(403);
+    }
+});
 exports.default = verifyJWT;

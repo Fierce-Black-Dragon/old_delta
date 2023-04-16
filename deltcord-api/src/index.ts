@@ -1,5 +1,5 @@
 
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Application,Request, Response } from 'express';
 import dotenv from 'dotenv';
 import session from 'express-session';
 import cors from 'cors';
@@ -16,7 +16,7 @@ import bodyParser from 'body-parser';
 dotenv.config();
 require("./config/db.ts").connect(mongoose);
 const app: Express = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 app.use(cors({
     origin: "http://localhost:5173",
@@ -24,7 +24,9 @@ app.use(cors({
     credentials: true
   }));
   
-app.options("*", cors());
+// app.options("*", cors());
+app.options("*", cors() as (req: any, res: any, next: any) => void);
+
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));

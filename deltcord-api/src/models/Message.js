@@ -34,12 +34,8 @@ const personalMessageSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now(),
     },
-    text: {
-        type: String,
-    },
-    file: {
-        type: String,
-    },
+    content: { type: String, trim: true },
+    readBy: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     chatId: { type: mongoose_1.default.Types.ObjectId, ref: "Chat", required: true },
 }, { timestamps: true }
 // more fields will be added when required

@@ -1,125 +1,255 @@
-import React, { useState } from "react";
-
-const Login = () => {
-  const [newuser, setNewUser] = useState(false);
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { Input } from "../common/Input";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import banner from "../../assets/logobanner.png";
+import useAxiosQuery from "../../hooks/useAxiosQuery";
+import endpoints from "../../api/endpoints";
+import { useMutation, useQuery } from "react-query";
+import { axiosPrivate } from "../../api/axiosApi";
+import useDeltaStore from "../../store/store";
+import { useNavigate } from "react-router-dom";
+interface propsType {
+  typeOfForm: string;
+  url: string;
+  loading: boolean;
+}
+export const LoginORsignup = ({ typeOfForm, url, loading }: propsType) => {
+  // const [newuser, setNewUser] = useState(false);
   const github = () => {
     window.open("http://localhost:4000/auth/github", "_self");
   };
+  const { user, setUser } = useDeltaStore();
+const navigate = useNavigate()
+  interface FormValues {
+    username: string;
+    password: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    confirmpassword?: string;
+  }
+
+  let initialValues: FormValues = {
+    username: "",
+    password: "",
+  };
+
+  if (typeOfForm === "signup") {
+    initialValues = {
+      ...initialValues,
+      email: "",
+      firstName: "",
+      lastName: "",
+      confirmpassword: "",
+    };
+  }
+
+  const loginValidationSchema = Yup.object({
+    username: Yup.string()
+      .max(20, "Name must be 20 characters or less.")
+      .required("Name is required"),
+    password: Yup.string().required("Password is required"),
+  });
+
+  const signupValidationSchema = Yup.object({
+    username: Yup.string()
+      .max(20, "Name must be 20 characters or less.")
+      .required("Name is required"),
+    email: Yup.string().email().required("Email is required"),
+    password: Yup.string().required("Password is required"),
+    confirmpassword: Yup.string()
+      .required("Confirm password is required")
+      .oneOf([Yup.ref("password"), ""], "Passwords must match"),
+  });
+
+  const validationSchema =
+    typeOfForm === "signup" ? signupValidationSchema : loginValidationSchema;
+  const handlelog = async (values: FormValues) => {
+    let url = typeOfForm === "signup" ? endpoints.SIGNUP : endpoints.LOGIN;
+    console.log(url);
+    console.log(values)
+    const response = await axiosPrivate.post(url, JSON.stringify(values));
+    const user = response.data;
+    return user;
+  };
+
+  const formik = useFormik({
+    initialValues: initialValues,
+
+    validationSchema: validationSchema,
+
+    onSubmit: async (values) => {
+      console.log("form submitted");
+      try {
+        const { data } = await mutateAsync(values);
+        setUser(data.user)
+
+        console.log(data);
+        navigate('/chats')
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
+  const {
+    mutateAsync,
+    isLoading,
+    isError,
+    isSuccess,
+    data,
+    error,
+  } = useMutation(
+    handlelog
+    // { staleTime: 3000 }
+  );
   return (
-    <div className="flex justify-center items-center">
-      <div className="relative isolate overflow-hidden bg-gray-900 p-24 rounded-lg shadow-2xl ">
-        <div className=" flex flex-col justify-center items-center">
-          {/* <h3>{newuser ? "Register" : "Login"}</h3> */}
-          <div className="flex flex-col w-full border-opacity-50">
-            <div className="grid h-100 card  rounded-box place-items-center">
-              <form action="" className="grid grid-col-1 gap-6">
-                <div className="flex  flex-col">
-                  <label htmlFor="username"> Username</label>
-                  <input
-                    type="text"
-                    placeholder="Type username  here"
-                    className="input w-full max-w-xs"
-                  />
-                </div>
-
-                {newuser ? (
-                  <div className="flex flex-col">
-                    <label htmlFor="email">Email</label>
-                    <input
-                      type="text"
-                      placeholder="Type Password  here"
-                      className="input w-full max-w-xs"
-                    />
-                  </div>
-                ) : (
-                  ""
-                )}
-                <div className="flex flex-col">
-                  <label htmlFor="password">Password</label>
-                  <input
-                    type="text"
-                    placeholder="Type Password  here"
-                    className="input w-full max-w-xs"
-                  />
-                </div>
-                {newuser ? (
-                  <div className="flex flex-col">
-                    <label htmlFor="confirm_password"> Confirm Password</label>
-                    <input
-                      type="text"
-                      placeholder="confirm Password  here"
-                      className="input w-full max-w-xs"
-                    />
-                  </div>
-                ) : (
-                  ""
-                )}
-
-                <div className="flex flex-col gap-2 justify-center items-center ">
-                  <button className="btn btn-success btn-sm" type="submit">submit</button>
-                  <a
-                  className="link"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setNewUser(!newuser);
-                  }}
-                >
-                  {newuser ? " Existing user " : "New user"}
-                </a>
-                </div>
-                
-               
-              </form>
-            </div>
-            <div className="divider">OR</div>
-            <div className="grid h-20 card  rounded-box place-items-center">
-              <div className="flex gap-1 justify-center items-center ">
-                <button className="px-6 py-3 mt-4 font-semibold text-gray-900 bg-white border-2 border-gray-500 rounded-md shadow outline-none hover:bg-blue-50 hover:border-blue-400 focus:outline-none" onClick={github}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    className="inline w-4 h-4 mr-3 text-gray-900 fill-current"
-                  >
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
-                  </svg>
-                  Sign in with GitHub
-                </button>
-                <button className="px-6 py-3 mt-4 font-semibold text-gray-900 bg-white border-2 border-gray-500 rounded-md shadow outline-none hover:bg-blue-50 hover:border-blue-400 focus:outline-none">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="inline w-4 h-4 mr-3 text-gray-900 fill-current"
-                    viewBox="0 0 48 48"
-                    width="48px"
-                    height="48px"
-                  >
-                    <path
-                      fill="#fbc02d"
-                      d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20 s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-                    ></path>
-                    <path
-                      fill="#e53935"
-                      d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039 l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-                    ></path>
-                    <path
-                      fill="#4caf50"
-                      d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-                    ></path>
-                    <path
-                      fill="#1565c0"
-                      d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-                    ></path>
-                  </svg>
-                  Sign in with Google
-                </button>
+    <div
+      className={"mt-14 w-full " + `${loading ? ` blur-sm  animate-flip` : ""}`}
+    >
+      <main className="  items-center flex justify-center">
+        <form
+          onSubmit={formik.handleSubmit}
+          className="flex bg-white rounded-lg w-1/2 font-latoRegular"
+          // style={{ background: "#f4f4f6" }}
+        >
+          <div className="flex-1 text-gray-700  p-9">
+            <h1 className="text-3xl pb-2 font-latoBold">
+              {/* Let's get started 👋 */}
+              {typeOfForm === "signup" ? "Let's get started 👋 " : "Login"}
+            </h1>
+            <p className="text-lg  text-gray-500"></p>
+            <div className="mt-4 ">
+              {/* Name input field */}
+              <div className="pb-2">
+                {/* handleChange, placeholder, label, value, errors, iserror, type,
+                handleBlur, name, */}
+                <Input
+                  handleChange={formik.handleChange}
+                  placeholder="Enter your username || Email"
+                  type="text"
+                  value={formik.values.username}
+                  errors={formik.errors.username || ""}
+                  name="username"
+                  label="Username"
+                  handleBlur={formik.handleBlur}
+                  iserror={
+                    formik.touched.username && formik.errors.username
+                      ? true
+                      : false
+                  }
+                />
               </div>
+              {typeOfForm === "signup" && (
+               <>
+                <div className="pb-2">
+                  <Input
+                    handleChange={formik.handleChange}
+                    placeholder="Enter your first name"
+                    type="text"
+                    value={formik.values.firstName || ""}
+                    errors={formik.errors.firstName || ""}
+                    name="firstName"
+                    label="First Name"
+                    handleBlur={formik.handleBlur}
+                    iserror={
+                      formik.touched.firstName && formik.errors.firstName ? true : false
+                    }
+                  />
+                </div>
+                <div className="pb-2">
+                  <Input
+                    handleChange={formik.handleChange}
+                    placeholder="Enter your last name"
+                    type="text"
+                    value={formik.values.lastName || ""}
+                    errors={formik.errors.lastName || ""}
+                    name="lastName"
+                    label="Last Name"
+                    handleBlur={formik.handleBlur}
+                    iserror={
+                      formik.touched.lastName && formik.errors.lastName ? true : false
+                    }
+                  />
+                </div>
+                <div className="pb-2">
+                  <Input
+                    handleChange={formik.handleChange}
+                    placeholder="Enter your Email"
+                    type="email"
+                    value={formik.values.email || ""}
+                    errors={formik.errors.email || ""}
+                    name="email"
+                    label="Email"
+                    handleBlur={formik.handleBlur}
+                    iserror={
+                      formik.touched.email && formik.errors.email ? true : false
+                    }
+                  />
+                </div>
+               </>
+              )}
+              {/* Email input field */}
+              <div className="pb-2">
+                <Input
+                  handleChange={formik.handleChange}
+                  placeholder="Enter your password"
+                  type="password"
+                  value={formik.values.password}
+                  errors={formik.errors.password || ""}
+                  name="password"
+                  label="password"
+                  handleBlur={formik.handleBlur}
+                  iserror={
+                    formik.touched.password && formik.errors.password
+                      ? true
+                      : false
+                  }
+                />
+              </div>
+              {typeOfForm === "signup" && (
+                <div className="pb-2">
+                  <Input
+                    handleChange={formik.handleChange}
+                    placeholder="Enter above password"
+                    type="password"
+                    value={formik.values.confirmpassword || ""}
+                    errors={formik.errors.confirmpassword || ""}
+                    name="confirmpassword"
+                    label="Confirm Password"
+                    handleBlur={formik.handleBlur}
+                    iserror={
+                      formik.touched.confirmpassword &&
+                      formik.errors.confirmpassword
+                        ? true
+                        : false
+                    }
+                  />
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="bg-teal-500 font-latoBold text-sm text-white py-3 mt-2 rounded-lg w-full"
+              >
+                {typeOfForm === "signup" ? "Create " : "Login"}
+                {/* Login  */}
+              </button>
             </div>
           </div>
-        </div>
-      </div>
+          <div className="relative flex-1">
+            <img
+              className="object-cover rounded-lg  image-full"
+              style={{
+                height: "35rem",
+                width: "30rem",
+              }}
+              src={banner}
+              alt="form-learn"
+            />
+          </div>
+        </form>
+      </main>
     </div>
   );
 };
-
-export default Login;

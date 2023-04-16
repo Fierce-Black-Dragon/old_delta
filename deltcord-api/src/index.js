@@ -19,12 +19,13 @@ const body_parser_1 = __importDefault(require("body-parser"));
 dotenv_1.default.config();
 require("./config/db.ts").connect(mongoose_1.default);
 const app = (0, express_1.default)();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 app.use((0, cors_1.default)({
     origin: "http://localhost:5173",
     methods: ["GET", "PATCH", "POST", "DELETE", "PUT"],
     credentials: true
 }));
+// app.options("*", cors());
 app.options("*", (0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
 app.use(body_parser_1.default.urlencoded({ extended: true }));

@@ -5,7 +5,8 @@ import { User } from '../types'
 interface DeltaStore {
 
     user: User;
-    setUser: (nUser: User) => void;
+    setUser: (user: User) => void;
+    
 
 }
 
@@ -15,14 +16,13 @@ const useDeltaStore = create<DeltaStore>()(
             (set) => ({
                 user: {
                     email: "",
-                    full_name: "",
-                    id: 0,
-                    image_url: "",
-                    info: "",
-                    username: "",
-                    isloggedin: false
+                    username:"",
+                    accessToken:"",
                 },
-                setUser: (nUser) => set(() => ({ user: nUser })),
+                setUser: (nUser) => set(() =>{
+                    console.log(nUser)
+                    return ({ user: nUser })
+                }),
 
             }),
             {
