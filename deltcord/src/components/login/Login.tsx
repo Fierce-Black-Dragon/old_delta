@@ -20,7 +20,7 @@ export const LoginORsignup = ({ typeOfForm, url, loading }: propsType) => {
     window.open("http://localhost:4000/auth/github", "_self");
   };
   const { user, setUser } = useDeltaStore();
-const navigate = useNavigate()
+  const navigate = useNavigate();
   interface FormValues {
     username: string;
     password: string;
@@ -68,7 +68,7 @@ const navigate = useNavigate()
   const handlelog = async (values: FormValues) => {
     let url = typeOfForm === "signup" ? endpoints.SIGNUP : endpoints.LOGIN;
     console.log(url);
-    console.log(values)
+    console.log(values);
     const response = await axiosPrivate.post(url, JSON.stringify(values));
     const user = response.data;
     return user;
@@ -83,10 +83,10 @@ const navigate = useNavigate()
       console.log("form submitted");
       try {
         const { data } = await mutateAsync(values);
-        setUser(data.user)
+        setUser(data.user);
 
         console.log(data);
-        navigate('/chats')
+        navigate("/chats");
       } catch (error) {
         console.log(error);
       }
@@ -106,7 +106,6 @@ const navigate = useNavigate()
   return (
     <div
       className={"mt-14 w-full " + `${loading ? ` blur-sm  animate-flip` : ""}`}
-      style={{background:`https://openailabsprodscus.blob.core.windows.net/private/user-cMTwLy6TFbCJZ7vIH0QuKlNb/generations/generation-GeRaswUZMINEf65OgaYQuOtf/image.webp?st=2023-04-17T14%3A45%3A26Z&se=2023-04-17T16%3A43%3A26Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/webp&skoid=15f0b47b-a152-4599-9e98-9cb4a58269f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-04-17T11%3A06%3A00Z&ske=2023-04-24T11%3A06%3A00Z&sks=b&skv=2021-08-06&sig=VZyPyLDvkoCQoMIZfO2pOdQ/NKA612gIN%2BbcGzWIYGQ%3D`}}
     >
       <main className="  items-center flex justify-center">
         <form
@@ -142,53 +141,59 @@ const navigate = useNavigate()
                 />
               </div>
               {typeOfForm === "signup" && (
-               <>
-                <div className="pb-2">
-                  <Input
-                    handleChange={formik.handleChange}
-                    placeholder="Enter your first name"
-                    type="text"
-                    value={formik.values.firstName || ""}
-                    errors={formik.errors.firstName || ""}
-                    name="firstName"
-                    label="First Name"
-                    handleBlur={formik.handleBlur}
-                    iserror={
-                      formik.touched.firstName && formik.errors.firstName ? true : false
-                    }
-                  />
-                </div>
-                <div className="pb-2">
-                  <Input
-                    handleChange={formik.handleChange}
-                    placeholder="Enter your last name"
-                    type="text"
-                    value={formik.values.lastName || ""}
-                    errors={formik.errors.lastName || ""}
-                    name="lastName"
-                    label="Last Name"
-                    handleBlur={formik.handleBlur}
-                    iserror={
-                      formik.touched.lastName && formik.errors.lastName ? true : false
-                    }
-                  />
-                </div>
-                <div className="pb-2">
-                  <Input
-                    handleChange={formik.handleChange}
-                    placeholder="Enter your Email"
-                    type="email"
-                    value={formik.values.email || ""}
-                    errors={formik.errors.email || ""}
-                    name="email"
-                    label="Email"
-                    handleBlur={formik.handleBlur}
-                    iserror={
-                      formik.touched.email && formik.errors.email ? true : false
-                    }
-                  />
-                </div>
-               </>
+                <>
+                  <div className="pb-2">
+                    <Input
+                      handleChange={formik.handleChange}
+                      placeholder="Enter your first name"
+                      type="text"
+                      value={formik.values.firstName || ""}
+                      errors={formik.errors.firstName || ""}
+                      name="firstName"
+                      label="First Name"
+                      handleBlur={formik.handleBlur}
+                      iserror={
+                        formik.touched.firstName && formik.errors.firstName
+                          ? true
+                          : false
+                      }
+                    />
+                  </div>
+                  <div className="pb-2">
+                    <Input
+                      handleChange={formik.handleChange}
+                      placeholder="Enter your last name"
+                      type="text"
+                      value={formik.values.lastName || ""}
+                      errors={formik.errors.lastName || ""}
+                      name="lastName"
+                      label="Last Name"
+                      handleBlur={formik.handleBlur}
+                      iserror={
+                        formik.touched.lastName && formik.errors.lastName
+                          ? true
+                          : false
+                      }
+                    />
+                  </div>
+                  <div className="pb-2">
+                    <Input
+                      handleChange={formik.handleChange}
+                      placeholder="Enter your Email"
+                      type="email"
+                      value={formik.values.email || ""}
+                      errors={formik.errors.email || ""}
+                      name="email"
+                      label="Email"
+                      handleBlur={formik.handleBlur}
+                      iserror={
+                        formik.touched.email && formik.errors.email
+                          ? true
+                          : false
+                      }
+                    />
+                  </div>
+                </>
               )}
               {/* Email input field */}
               <div className="pb-2">
@@ -238,8 +243,15 @@ const navigate = useNavigate()
               </button>
             </div>
           </div>
-          <div className="block sm:hidden lg:block">
-            
+          <div className="hidden sm:block md:block lg:block w-80">
+            <img
+              className="object-cover rounded-lg image-full w-80"
+              style={{
+                height: `${typeOfForm === "signup" ? "45rem" : ""}`,
+              }}
+              src={banner}
+              alt="form-learn"
+            />
           </div>
         </form>
       </main>

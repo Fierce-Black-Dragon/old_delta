@@ -13,7 +13,7 @@ const AuthScreen = () => {
   };
 
   return (
-    <div>
+    <div className="flex justify-center items-center h-screen flex-col lg:mt-10">
       {/* <Navbar  /> */}
       <div className="navbar flex flex-col justify-center items-center">
         <div className="flex-1">
@@ -35,7 +35,7 @@ const AuthScreen = () => {
         />
       )}
       {/* </div> */}
-      <div className="m-50">
+      <div className="">
         <button
           onClick={handleOnClick}
           className="btn btn-link normal-case text-white "
