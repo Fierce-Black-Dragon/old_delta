@@ -13,7 +13,7 @@ const AuthScreen = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen flex-col lg:mt-10">
+    <div className="flex justify-center items-center h-screen flex-col ">
       {/* <Navbar  /> */}
       <div className="navbar flex flex-col justify-center items-center">
         <div className="flex-1">
