@@ -13,7 +13,7 @@ const useRefreshToken = () => {
     if(response.data.success){
       console.log("first")
       if(location.pathname === '/auth') {
-        navigate('/chats')
+        // navigate('/chats')
       }else{
         navigate(location)
       }

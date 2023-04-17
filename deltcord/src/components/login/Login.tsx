@@ -106,14 +106,15 @@ const navigate = useNavigate()
   return (
     <div
       className={"mt-14 w-full " + `${loading ? ` blur-sm  animate-flip` : ""}`}
+      style={{background:`https://openailabsprodscus.blob.core.windows.net/private/user-cMTwLy6TFbCJZ7vIH0QuKlNb/generations/generation-GeRaswUZMINEf65OgaYQuOtf/image.webp?st=2023-04-17T14%3A45%3A26Z&se=2023-04-17T16%3A43%3A26Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/webp&skoid=15f0b47b-a152-4599-9e98-9cb4a58269f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-04-17T11%3A06%3A00Z&ske=2023-04-24T11%3A06%3A00Z&sks=b&skv=2021-08-06&sig=VZyPyLDvkoCQoMIZfO2pOdQ/NKA612gIN%2BbcGzWIYGQ%3D`}}
     >
       <main className="  items-center flex justify-center">
         <form
           onSubmit={formik.handleSubmit}
-          className="flex bg-white rounded-lg w-1/2 font-latoRegular"
+          className="flex bg-white rounded-lg  font-latoRegular sm:  m-2   lg: w-1/2 "
           // style={{ background: "#f4f4f6" }}
         >
-          <div className="flex-1 text-gray-700  p-9">
+          <div className="flex-1 text-gray-700  sm: p-3">
             <h1 className="text-3xl pb-2 font-latoBold">
               {/* Let's get started 👋 */}
               {typeOfForm === "signup" ? "Let's get started 👋 " : "Login"}
@@ -237,16 +238,8 @@ const navigate = useNavigate()
               </button>
             </div>
           </div>
-          <div className="relative flex-1">
-            <img
-              className="object-cover rounded-lg  image-full"
-              style={{
-                height: "35rem",
-                width: "30rem",
-              }}
-              src={banner}
-              alt="form-learn"
-            />
+          <div className="block sm:hidden lg:block">
+            
           </div>
         </form>
       </main>

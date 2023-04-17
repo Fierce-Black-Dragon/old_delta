@@ -16,7 +16,7 @@ import bodyParser from 'body-parser';
 dotenv.config();
 require("./config/db.ts").connect(mongoose);
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 app.use(cors({
     origin: "http://localhost:5173",
